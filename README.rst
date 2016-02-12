@@ -21,9 +21,9 @@ Add the plugin according to the `sbt documentation`_.
 For instance, add the following lines to the file ``hello/project/build.sbt`` in your
 project directory::
 
-    resolvers += "sbt-plugin-releases" at "http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases"
+    resolvers += "sbt-plugin-releases" at "[your nexus repo URL]"
 
-    addSbtPlugin("com.cavorite" % "sbt-avro" % "0.3.2")
+    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.0.1")
 
 
 Import the plugin settings
@@ -32,7 +32,7 @@ Import the plugin settings
 To activate the plugin, import its settings by adding the following lines to 
 your ``hello/build.sbt`` file::
 
-    seq( sbtavro.SbtAvro.avroSettings : _*)
+    seq(com.c4soft.sbtavro.SbtAvro.avroSettings : _*)
 
 
 Scope
@@ -59,7 +59,7 @@ Example
 For example, if you want to change the Java type of the string elements in 
 the schema, you can add the following lines to your ``build.sbt``  file: 
     
-    seq( sbtavro.SbtAvro.avroSettings : _*)
+    seq(com.c4soft.sbtavro.SbtAvro.avroSettings : _*)
     
     (stringType in avroConfig) := "String"
 
