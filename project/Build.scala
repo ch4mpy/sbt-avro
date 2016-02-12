@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import tv.teads.build.JarPublishingPlugin
 
 object build extends Build {
     val sbtAvro = Project(
@@ -9,6 +10,7 @@ object build extends Build {
             organization := "com.c4soft",
             version := "1.0.1",
             sbtPlugin := true,
+            scalaVersion := appConfiguration.value.provider.scalaProvider.version,
             libraryDependencies ++= Seq(
                     "org.apache.avro" % "avro" % "1.7.7",
                     "org.apache.avro" % "avro-compiler" % "1.7.7",
@@ -16,10 +18,7 @@ object build extends Build {
             ),
             scalacOptions in Compile ++= Seq("-deprecation"),
             description := "Sbt plugin for compiling Avro sources",
-
-            publishTo := Some(Resolver.url("sbt-plugin-releases", new URL("http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns)),
-
-            publishMavenStyle := false
+            publishMavenStyle := true
         )
-    )
+    ).enablePlugins(JarPublishingPlugin)
 }
