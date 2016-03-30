@@ -60,9 +60,9 @@ object SbtAvro extends Plugin {
   lazy val avroSettings: Seq[Setting[_]] = inConfig(avroConfig)(Seq[Setting[_]](
     sourceDirectory <<= (sourceDirectory in Compile) { _ / "avro" },
     javaSource <<= (sourceManaged in Compile) { _ / "compiled_avro" },
-    stringType := "CharSequence",
+    stringType := "String",
     fieldVisibility := "public_deprecated",
-    version := "1.7.3",
+    version := "1.7.7",
 
     managedClasspath <<= (classpathTypes, update) map { (ct, report) =>
       Classpaths.managedJars(avroConfig, ct, report)
