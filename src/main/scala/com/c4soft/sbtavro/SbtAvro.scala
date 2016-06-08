@@ -91,7 +91,7 @@ object SbtAvro extends Plugin {
       compiler.compileToDestination(null, target)
     }
 
-    for (schemaFile <- sortSchemaFiles((srcDir ** "*.avsc").get)) {
+    for (schemaFile <- sortSchemaFiles((srcDir ** "*.avsc").get, log)) {
       log.info("Compiling Avro schema %s".format(schemaFile))
       val schemaAvr = schemaParser.parse(schemaFile)
       val compiler = new SpecificCompiler(schemaAvr)
@@ -122,7 +122,7 @@ object SbtAvro extends Plugin {
         cachedCompile((srcDir ** "*.av*").get.toSet).toSeq
     }
 
-  def sortSchemaFiles(files: Traversable[File]): Seq[File] = {
+  def sortSchemaFiles(files: Traversable[File], log: Logger): Seq[File] = {
     val reversed = mutable.MutableList.empty[File]
     var used: Traversable[File] = files
     while(!used.isEmpty) {
@@ -130,7 +130,9 @@ object SbtAvro extends Plugin {
       reversed ++= usedUnused._2
       used = usedUnused._1
     }
-    reversed.reverse.toSeq
+    val sorted = reversed.reverse.toSeq
+    log.info(s"sorted schema files: ${sorted.map(_.absolutePath).mkString("[", ", ", "]")}")
+    sorted
   }
 
   def strContainsType(str: String, fullName: String): Boolean = {

@@ -7,7 +7,7 @@ object build extends Build {
       base = file("."),
       settings = Defaults.defaultSettings ++ Seq[Project.Setting[_]](
         organization := "com.c4soft",
-        version := "1.1.1",
+        version := "1.1.2",
         sbtPlugin := true,
         scalaVersion := "2.10.4",
         libraryDependencies ++= Seq(
