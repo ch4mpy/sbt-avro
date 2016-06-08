@@ -23,7 +23,7 @@ project directory::
 
     resolvers += "sbt-plugin-releases" at "[your nexus repo URL]"
 
-    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.0.1")
+    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.1.1")
 
 
 Import the plugin settings
@@ -49,8 +49,8 @@ Name                Name in shell            Default                            
 ===============     ====================     ================================     ===============
 sourceDirectory     ``source-directory``     ``src/main/avro``                    Path containing ``*.avsc``, ``*.avdl`` and ``*.avpr`` files.
 javaSource          ``java-source``          ``$sourceManaged/compiled_avro``     Path for the generated ``*.java`` files.
-version             ``version``              ``1.7.3``                            Version of the Avro library should be used. A dependency to ``"org.apache.avro" % "avro-compiler" % "$version"`` is automatically added to ``libraryDependencies``.
-stringType          ``string-type``          ``CharSequence``                     Java type for string elements. Possible values: ``CharSequence`` (by default), ``Utf8`` and ``String``.
+version             ``version``              ``1.7.7``                            Version of the Avro library should be used. A dependency to ``"org.apache.avro" % "avro-compiler" % "$version"`` is automatically added to ``libraryDependencies``.
+stringType          ``string-type``          ``String``                           Java type for string elements. Possible values: ``CharSequence`` (by default), ``Utf8`` and ``String``.
 ===============     ====================     ================================     ===============
 
 Example
@@ -93,12 +93,14 @@ Contributors
 - `Daniel Lundin`_
 - `Vince Tse`_
 - `Ashwanth Kumar`_
+- `Jérôme - Ch4mpy - Wacongne`_
 
 .. _`sbt-protobuf`: https://github.com/gseitz/sbt-protobuf
 .. _`Brennan Saeta`: https://github.com/saeta
 .. _`Daniel Lundin`: https://github.com/dln
 .. _`Vince Tse`: https://github.com/vtonehundred
 .. _`Ashwanth Kumar`: https://github.com/ashwanthkumar
+.. _`Ch4mpy`: https://github.com/ch4mpy/sbt-avro
 .. __: http://cavorite.com
 
 

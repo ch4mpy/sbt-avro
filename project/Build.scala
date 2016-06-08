@@ -1,6 +1,5 @@
 import sbt._
 import Keys._
-import tv.teads.build.JarPublishingPlugin
 
 object build extends Build {
   val sbtAvro = Project(
@@ -8,7 +7,7 @@ object build extends Build {
       base = file("."),
       settings = Defaults.defaultSettings ++ Seq[Project.Setting[_]](
         organization := "com.c4soft",
-        version := "1.1.0",
+        version := "1.1.1",
         sbtPlugin := true,
         scalaVersion := "2.10.4",
         libraryDependencies ++= Seq(
@@ -18,8 +17,12 @@ object build extends Build {
         ),
         scalacOptions in Compile ++= Seq("-deprecation"),
         description := "Sbt plugin for compiling Avro sources",
+        publishTo := Some(if(isSnapshot.value) teadsRepo("snapshots") else teadsRepo("releases")),
         publishMavenStyle := true,
         credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
       )
     )
+
+    private def teadsRepo(name: String) =
+      s"Teads $name" at s"http://nexus.teads.net/content/repositories/$name/"
 }
