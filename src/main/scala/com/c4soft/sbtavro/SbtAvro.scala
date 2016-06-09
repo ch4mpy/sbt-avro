@@ -129,14 +129,15 @@ object SbtAvro extends Plugin {
       val usedUnused = usedUnusedSchemas(used)
       reversed ++= usedUnused._2
       used = usedUnused._1
+      log.debug(s"used files: ${used.map(_.absolutePath).mkString("[", ", ", "]")}")
     }
     val sorted = reversed.reverse.toSeq
-    log.info(s"sorted schema files: ${sorted.map(_.absolutePath).mkString("[", ", ", "]")}")
+    log.debug(s"sorted schema files: ${sorted.map(_.absolutePath).mkString("[", ", ", "]")}")
     sorted
   }
 
   def strContainsType(str: String, fullName: String): Boolean = {
-    val typeRegex = "\\\"type\\\"\\s*:\\s*(\\\"" + fullName + "\\\")|(\\[[^\\]]*\\\"" + fullName + "\\\"\\])"
+    val typeRegex = "\\\"type\\\"\\s*:\\s*(\\\"" + fullName + "\\\")|(\\[[^\\]]*\\\"" + fullName + "\\\"[^\\]]*\\])"
     typeRegex.r.findFirstIn(str).isDefined
   }
 
@@ -144,7 +145,8 @@ object SbtAvro extends Plugin {
     val usedUnused = files.map { f =>
       val fullName = extractFullName(f)
       (f, files.count { candidate =>
-        strContainsType(fileText(candidate), fullName)
+        val isUsed = strContainsType(fileText(candidate), fullName)
+        isUsed
       } )
     }.partition(_._2 > 0)
     (usedUnused._1.map(_._1), usedUnused._2.map(_._1))
@@ -164,7 +166,7 @@ object SbtAvro extends Plugin {
   def fileText(f: File): String = {
     val src = Source.fromFile(f)
     try {
-      return src.getLines.mkString
+      return src.getLines.mkString(" ")
     } finally {
       src.close()
     }
