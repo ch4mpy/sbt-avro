@@ -100,7 +100,7 @@ Contributors
 .. _`Daniel Lundin`: https://github.com/dln
 .. _`Vince Tse`: https://github.com/vtonehundred
 .. _`Ashwanth Kumar`: https://github.com/ashwanthkumar
-.. _`Ch4mpy`: https://github.com/ch4mpy/sbt-avro
+.. _`Jérôme - Ch4mpy - Wacongne`: https://github.com/ch4mpy/sbt-avro
 .. __: http://cavorite.com
 
 
