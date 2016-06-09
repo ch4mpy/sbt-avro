@@ -2,12 +2,12 @@ package com.c4soft.sbtavro;
 
 import java.io.File
 
+import com.c4soft.sbtavro.utils.SchemaParser
 import org.apache.avro.Protocol
 import org.apache.avro.Schema
 import org.apache.avro.compiler.idl.Idl
 import org.apache.avro.compiler.specific.SpecificCompiler
 import org.apache.avro.generic.GenericData.StringType
-
 import sbt.Classpaths
 import sbt.Compile
 import sbt.ConfigKey.configurationToKey
@@ -41,7 +41,6 @@ import sbt.singleFileFinder
 import sbt.toGroupID
 
 import scala.collection.mutable
-import scala.io.Source
 
 /**
  * Simple plugin for generating the Java sources for Avro schemas and protocols.
@@ -76,10 +75,10 @@ object SbtAvro extends Plugin {
     ivyConfigurations += avroConfig)
 
   private def compile(srcDir: File, target: File, log: Logger, stringTypeName: String, fieldVisibilityName: String) = {
-    val stringType = StringType.valueOf(stringTypeName);
-    log.info("Avro compiler using stringType=%s".format(stringType));
+    val stringType = StringType.valueOf(stringTypeName)
+    log.info("Avro compiler using stringType=%s".format(stringType))
 
-    val schemaParser = new Schema.Parser();
+    val schemaParser = new Schema.Parser()
 
     for (idl <- (srcDir ** "*.avdl").get) {
       log.info("Compiling Avro IDL %s".format(idl))
@@ -122,57 +121,38 @@ object SbtAvro extends Plugin {
         cachedCompile((srcDir ** "*.av*").get.toSet).toSeq
     }
 
+  // In this method we parse each schema twice, this might not be the most efficient way to do it but it's
+  // the most functional way I could find
   def sortSchemaFiles(files: Traversable[File], log: Logger): Seq[File] = {
-    val reversed = mutable.MutableList.empty[File]
-    var used: Traversable[File] = files
-    while(!used.isEmpty) {
-      val usedUnused = usedUnusedSchemas(used)
-      reversed ++= usedUnused._2
-      used = usedUnused._1
-      log.debug(s"used files: ${used.map(_.absolutePath).mkString("[", ", ", "]")}")
+    val compilationQueue = mutable.Queue[File]()
+
+    // Keeps a mapping of each Schema name to the corresponding schema file
+    val qualifiedNameToFileMapping = files.map { file =>
+      val parser = new SchemaParser(file)
+      (parser.getFullyQualifiedName(), file)
+    }.toMap
+
+
+    // Creates a table on the form of [File -> List of File Names]
+    // and updates a reference map to find which file is compiling which schema
+    // It represents, for a given Schema, the list of Schemas needed to be compiled in order for it to be compiled
+    val dependencyGraph = files.map { file =>
+      val parser = new SchemaParser(file)
+      (file, parser.getDependentSchemas().map(schemaName => qualifiedNameToFileMapping(schemaName)))
     }
-    val sorted = reversed.reverse.toSeq
-    log.debug(s"sorted schema files: ${sorted.map(_.absolutePath).mkString("[", ", ", "]")}")
-    sorted
-  }
 
-  def strContainsType(str: String, fullName: String): Boolean = {
-    val typeRegex = "\\\"type\\\"\\s*:\\s*(\\\"" + fullName + "\\\")|(\\[[^\\]]*\\\"" + fullName + "\\\"[^\\]]*\\])"
-    typeRegex.r.findFirstIn(str).isDefined
-  }
-
-  def usedUnusedSchemas(files: Traversable[File]): (Traversable[File], Traversable[File]) = {
-    val usedUnused = files.map { f =>
-      val fullName = extractFullName(f)
-      (f, files.count { candidate =>
-        val isUsed = strContainsType(fileText(candidate), fullName)
-        isUsed
-      } )
-    }.partition(_._2 > 0)
-    (usedUnused._1.map(_._1), usedUnused._2.map(_._1))
-  }
-
-  def extractFullName(f: File): String = {
-    val txt = fileText(f)
-    val namespace = namespaceRegex.findFirstMatchIn(txt)
-    val name = nameRegex.findFirstMatchIn(txt)
-    if(namespace == None) {
-      return name.get.group(1)
-    } else {
-      return s"${namespace.get.group(1)}.${name.get.group(1)}"
+    // At each iteration we get from the dependency graph each file that doesn't need any other file to be compiled
+    while(compilationQueue.size != files.size) {
+      dependencyGraph.collect {
+        // For each file, check if all its dependencies are already in the compilation queue
+        case (file, dependencies) if !compilationQueue.contains(file) && dependencies.forall(compilationQueue.contains) => file
+      }.foreach { fileName =>
+        compilationQueue.enqueue(fileName) // We add the file to the compilation queue
+      }
     }
-  }
 
-  def fileText(f: File): String = {
-    val src = Source.fromFile(f)
-    try {
-      return src.getLines.mkString(" ")
-    } finally {
-      src.close()
-    }
+    log.debug(s"sorted schema files: ${compilationQueue.map(_.absolutePath).mkString("[", ", ", "]")}")
+    compilationQueue
   }
-
-  val namespaceRegex = "\\\"namespace\\\"\\s*:\\s*\"([^\\\"]+)\\\"".r
-  val nameRegex = "\\\"name\\\"\\s*:\\s*\"([^\\\"]+)\\\"".r
 
 }
