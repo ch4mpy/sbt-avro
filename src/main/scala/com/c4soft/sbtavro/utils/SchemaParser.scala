@@ -13,18 +13,19 @@ import scala.io.Source
 class SchemaParser(fromFile: File) {
 
   private[this] lazy val jsonValue = Json.parse(Source.fromFile(fromFile).mkString)
+
+  // needs to be lazy so it's initialized after the enum values
+  private lazy val avroDefaultTypeNames = Schema.Type.values().map(_.getName)
+
   def getFullyQualifiedName(): String = {
     val namespaceOpt = (jsonValue \ "namespace").asOpt[String]
     val name = (jsonValue \ "name").as[String]
     namespaceOpt.map(_ + ".").getOrElse("") + name
   }
 
-  // needs to be lazy so it's initialized after the enum values
-  private lazy val avroDefaultTypeNames = Schema.Type.values().map(_.getName)
   def getDependentSchemas(typeExclusions: Seq[String] = avroDefaultTypeNames): Seq[String] = {
     extractTypes(jsonValue).filterNot(typeExclusions.contains).distinct
   }
-
 
   private def extractTypes(value: JsValue): Seq[String] = {
     value match {

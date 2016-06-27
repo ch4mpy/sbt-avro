@@ -49,10 +49,10 @@ object SbtAvro extends Plugin {
   val avroConfig = config("avro")
 
   val stringType = SettingKey[String]("string-type", "Type for representing strings. " +
-    "Possible values: CharSequence, String, Utf8. Default: CharSequence.")
+    "Possible values: CharSequence, String, Utf8. Default: String.")
 
   val fieldVisibility = SettingKey[String]("field-visibiliy", "Field Visibility for the properties" +
-    "Possible values: private, public, public_deprecated. Default: public_deprecated.")
+    "Possible values: private, public, public_deprecated. Default: private.")
 
   val generate = TaskKey[Seq[File]]("generate", "Generate the Java sources for the Avro files.")
 
@@ -60,7 +60,7 @@ object SbtAvro extends Plugin {
     sourceDirectory <<= (sourceDirectory in Compile) { _ / "avro" },
     javaSource <<= (sourceManaged in Compile) { _ / "compiled_avro" },
     stringType := "String",
-    fieldVisibility := "public_deprecated",
+    fieldVisibility := "private",
     version := "1.7.7",
 
     managedClasspath <<= (classpathTypes, update) map { (ct, report) =>
