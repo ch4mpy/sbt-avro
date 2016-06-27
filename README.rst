@@ -23,7 +23,7 @@ project directory::
 
     resolvers += "sbt-plugin-releases" at "[your nexus repo URL]"
 
-    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.1.3")
+    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.2.0")
 
 
 Import the plugin settings

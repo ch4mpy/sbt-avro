@@ -18,8 +18,8 @@ class SbtAvroSpec extends Specification with Mockito {
   val sourceFiles = Seq(new File(sourceDir, "a.avsc"), new File(sourceDir, "b.avsc"), new File(sourceDir, "c.avsc"))
 
   "Schema files should be sorted with re-used types schemas first, whatever input order" >> {
-    SbtAvro.sortSchemaFiles(sourceFiles, mock[Logger]) must beEqualTo(Seq(new File(sourceDir, "c.avsc"), new File(sourceDir, "b.avsc"), new File(sourceDir, "a.avsc")))
-    SbtAvro.sortSchemaFiles(sourceFiles.reverse, mock[Logger]) must beEqualTo(Seq(new File(sourceDir, "c.avsc"), new File(sourceDir, "b.avsc"), new File(sourceDir, "a.avsc")))
+    SbtAvro.sortSchemaFiles(sourceFiles, mock[Logger]).toList must beEqualTo(Seq(new File(sourceDir, "c.avsc"), new File(sourceDir, "b.avsc"), new File(sourceDir, "a.avsc")))
+    SbtAvro.sortSchemaFiles(sourceFiles.reverse, mock[Logger]).toList must beEqualTo(Seq(new File(sourceDir, "c.avsc"), new File(sourceDir, "b.avsc"), new File(sourceDir, "a.avsc")))
   }
 
   "It should be possible to compile types depending on others if source files are provided in right order" >> {

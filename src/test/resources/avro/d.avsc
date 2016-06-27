@@ -1,0 +1,18 @@
+{
+    "type": "record",
+    "namespace": "com.c4soft.sbtavro",
+    "name": "D",
+    "fields": [{
+            "name": "foo",
+            "type": "com.c4soft.sbtavro.SchemaParsing1"
+        }, {
+            "name": "bar",
+            "type": "record",
+            "fields": [{
+                "name": "baz",
+                "type": "com.c4soft.sbtavro.SchemaParsing2"
+            }
+            ]
+        }
+    ]
+}
