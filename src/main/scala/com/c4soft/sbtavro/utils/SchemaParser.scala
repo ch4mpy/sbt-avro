@@ -33,7 +33,10 @@ class SchemaParser(fromFile: File) {
       case obj: JsObject =>
         obj \ "type" match {
           case JsArray(values) => values.flatMap(v => extractTypes(v))
-          case JsString("record") => parseFields((obj \ "fields").as[JsArray])
+          case JsString("record") => (obj \ "fields").as[JsArray].value.flatMap {
+            case obj: JsObject => extractTypes(obj)
+            case _ => Seq.empty
+          }
           case JsString("array") => extractTypes(obj \ "items")
           case JsString(otherType) => Seq(otherType)
           case obj: JsObject => extractTypes(obj)
@@ -41,13 +44,6 @@ class SchemaParser(fromFile: File) {
         }
       case JsArray(values) => values.flatMap(v => extractTypes(v))
       case other => Seq.empty
-    }
-  }
-
-  private def parseFields(listOfFields: JsArray) = {
-    listOfFields.value.flatMap {
-      case obj: JsObject => extractTypes(obj)
-      case _ => Seq.empty
     }
   }
 
