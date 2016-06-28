@@ -1,0 +1,18 @@
+{
+    "type": "record",
+    "namespace": "com.c4soft.sbtavro",
+    "name": "RecordWithArray",
+    "fields": [{
+            "name": "foo",
+            "type": "array",
+            "items": ["null", "TypeWithinArray"]
+        }, {
+            "name": "bar",
+            "type": "string"
+        }, {
+            "name": "baz",
+            "type": "array",
+            "items": "string"
+        }
+    ]
+}

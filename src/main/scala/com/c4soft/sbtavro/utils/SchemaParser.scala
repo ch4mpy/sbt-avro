@@ -34,10 +34,12 @@ class SchemaParser(fromFile: File) {
         obj \ "type" match {
           case JsArray(values) => values.flatMap(v => extractTypes(v))
           case JsString("record") => parseFields((obj \ "fields").as[JsArray])
+          case JsString("array") => extractTypes(obj \ "items")
           case JsString(otherType) => Seq(otherType)
           case obj: JsObject => extractTypes(obj)
           case _ => Seq.empty
         }
+      case JsArray(values) => values.flatMap(v => extractTypes(v))
       case other => Seq.empty
     }
   }

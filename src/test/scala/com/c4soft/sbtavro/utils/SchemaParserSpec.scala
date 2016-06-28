@@ -19,4 +19,9 @@ class SchemaParserSpec extends Specification {
   "SchemaParser should correctly ignore certain types when getting the dependent schemas" >> {
     parser.getDependentSchemas(Seq("com.c4soft.sbtavro.SchemaParsing2")) must containTheSameElementsAs(Seq("com.c4soft.sbtavro.SchemaParsing1"))
   }
+  "SchemaParser should be able to find dependant type inside of arrays" >> {
+    val fileWithArray = new File(getClass.getClassLoader.getResource("avro/RecordWithArray.avsc").toURI)
+    val newParser = new SchemaParser(fileWithArray)
+    newParser.getDependentSchemas() must containTheSameElementsAs(Seq("TypeWithinArray"))
+  }
 }
