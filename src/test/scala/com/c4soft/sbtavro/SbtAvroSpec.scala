@@ -43,4 +43,8 @@ class SbtAvroSpec extends Specification with Mockito {
     bJavaFile.isFile must beTrue
     cJavaFile.isFile must beTrue
   }
+
+  "SortSchemaFiles should not crash when a schema is referencing one of its inlined types" >> {
+    SbtAvro.sortSchemaFiles(Seq(new File(sourceDir, "RecordReferencingItsOwnTypes.avsc")), mock[Logger]) must not(throwA[NoSuchElementException])
+  }
 }
