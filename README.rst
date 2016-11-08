@@ -19,11 +19,11 @@ Add the plugin according to the `sbt documentation`_.
 .. _`sbt documentation`: https://github.com/harrah/xsbt/wiki/Getting-Started-Using-Plugins
 
 For instance, add the following lines to the file ``hello/project/build.sbt`` in your
-project directory::
+project directory (be carefull, latest release is bugged, use 1.1.3 instead of 1.2.0)::
 
     resolvers += "sbt-plugin-releases" at "[your nexus repo URL]"
 
-    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.2.0")
+    addSbtPlugin("com.c4soft" % "sbt-avro" % "1.1.3")
 
 
 Import the plugin settings
