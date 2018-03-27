@@ -1,4 +1,4 @@
-package com.c4soft.sbtavro;
+package com.c4soft.sbtavro
 
 import java.io.File
 
@@ -126,10 +126,12 @@ object SbtAvro extends Plugin {
   def sortSchemaFiles(files: Traversable[File], log: Logger): Seq[File] = {
     val compilationQueue = mutable.Queue[File]()
 
-    // Keeps a mapping of each Schema name to the corresponding schema file
-    val qualifiedNameToFileMapping = files.map { file =>
+    // Keeps a mapping of each declared Schemas name to the corresponding file
+    val qualifiedNameToFileMapping = files.flatMap { file =>
       val parser = new SchemaParser(file)
-      (parser.getFullyQualifiedName(), file)
+      parser.getDeclaredSchemas().map { schema =>
+        (schema, file)
+      } :+ ((parser.getFullyQualifiedName(), file))
     }.toMap
 
 
@@ -138,7 +140,7 @@ object SbtAvro extends Plugin {
     // It represents, for a given Schema, the list of Schemas needed to be compiled in order for it to be compiled
     val dependencyGraph = files.map { file =>
       val parser = new SchemaParser(file)
-      (file, parser.getDependentSchemas().map(schemaName => qualifiedNameToFileMapping(schemaName)))
+      (file, parser.getDependentSchemas().map(schemaName => qualifiedNameToFileMapping(schemaName)).filterNot(_ == file).distinct)
     }
 
     // At each iteration we get from the dependency graph each file that doesn't need any other file to be compiled
